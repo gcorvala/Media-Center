@@ -1,0 +1,15 @@
+<interface>
+	<object class="GtkWindow" id="window">
+		<property name="default-height">400</property>
+		<property name="default-width">640</property>
+		<property name="resizable">TRUE</property>
+		<property name="title">GNOME Media Center</property>
+		<child>
+			<object class="GtkVBox" id="main_box">
+				<child>
+					<object class="GtkClutterEmbed" id="embed" />
+				</child>
+			</object>
+		</child>
+	</object>
+</interface>
