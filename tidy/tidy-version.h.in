@@ -1,0 +1,15 @@
+#ifndef __TIDY_VERSION_H__
+#define __TIDY_VERSION_H__
+
+#define TIDY_MAJOR_VERSION              (@TIDY_MAJOR_VERSION@)
+#define TIDY_MINOR_VERSION              (@TIDY_MINOR_VERSION@)
+#define TIDY_MICRO_VERSION              (@TIDY_MICRO_VERSION@)
+
+#define TIDY_VERSION                    (@TIDY_VERSION@)
+
+#define TIDY_VERSION_S                  "@TIDY_VERSION@"
+#define TIDY_VERSION_HEX                (TIDY_MAJOR_VERSION << 24 | \
+                                         TIDY_MINOR_VERSION << 16 | \
+                                         TIDY_MICRO_VERSION << 8)
+
+#endif /* __TIDY_VERSION_H__ */

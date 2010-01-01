@@ -7,6 +7,43 @@
 		<child>
 			<object class="GtkVBox" id="main_box">
 				<child>
+					<object class="GtkMenuBar" id="Menu">
+						<property name="visible">True</property>
+						<child>
+							<object class="GtkMenuItem" id="menuitem1">
+								<property name="visible">True</property>
+								<property name="label" translatable="yes">_Fichier</property>
+								<property name="use_underline">True</property>
+								<child type="submenu">
+									<object class="GtkMenu" id="menu1">
+										<property name="visible">True</property>
+										<child>
+											<object class="GtkImageMenuItem" id="imagemenuitem1">
+												<property name="label">gtk-new</property>
+												<property name="visible">True</property>
+												<property name="use_underline">True</property>
+												<property name="use_stock">True</property>
+											</object>
+										</child>
+										<child>
+											<object class="GtkImageMenuItem" id="imagemenuitem2">
+												<property name="label">gtk-open</property>
+												<property name="visible">True</property>
+												<property name="use_underline">True</property>
+												<property name="use_stock">True</property>
+											</object>
+										</child>
+									</object>
+								</child>
+							</object>
+						</child>
+					</object>
+					<packing>
+						<property name="expand">FALSE</property>
+					</packing>
+					
+				</child>
+				<child>
 					<object class="GtkClutterEmbed" id="embed" />
 				</child>
 			</object>
