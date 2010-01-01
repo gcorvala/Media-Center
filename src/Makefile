@@ -7,8 +7,14 @@ CLUTTER_GST_CFLAGS = `pkg-config --cflags clutter-gst-0.10`
 CLUTTER_GTK_LIBS = `pkg-config --libs clutter-gtk-0.10`
 CLUTTER_GTK_CFLAGS = `pkg-config --cflags clutter-gtk-0.10`
 
-OBJECTS = gmc-video-controler.o \
-		  gmc-button-play.o
+OBJECTS = gmc-video-controler.o
+
+# gmc-movie-controler.o \ # ClutterActor
+# gmc-movie-model.o \ # ClutterModel
+# gmc-movie-view.o \ # ClutterActor
+# gmc-music-controler.o
+# gmc-music-model.o
+# gmc-music-view.o
 
 all: main
 
