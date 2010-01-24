@@ -1,11 +1,12 @@
 {
   "id"       : "stage",
   "type"     : "ClutterStage",
-  "color"    : "#0000ffff",
+  "color"    : "#000000ff",
   "title"    : "GMediaCenter",
   "width"    : 640,
   "height"   : 480,
   "children" : [ "red-button" ]
+  "signals"  : [ { "name" : "destroy", "handler" : "clutter_main_quit" } ]
 }
 
 {
@@ -13,10 +14,9 @@
   "type"    : "ClutterRectangle",
   "width"   : 100,
   "height"  : 100,
-  "color"   : "#ff0000ff",
+  "color"   : "#0000ffff",
   "x"       : 320,
   "y"       : 240,
   "reactive": true,
-  "signals" : [ { "name" : "button-press-event", "handler" : "clutter_main_quit" } ]
+  "signals" : [ { "name" : "button-press-event", "handler" : "add_box" } ]
 }
-
