@@ -1,29 +1,14 @@
 #include <clutter/clutter.h>
 #include "gmc-carousel.h"
-
-ClutterActor *carousel;
-
-gboolean
-add_box (ClutterActor *actor2,
-         ClutterEvent *event,
-         gpointer      user_data)
-{
-  ClutterColor *color;
-  ClutterActor *actor;
-
-  color = clutter_color_new (0xff, 0x00, 0x00, 0xff);
-  actor = clutter_rectangle_new_with_color (color);
-  clutter_actor_set_size (actor, 50, 50);
-  clutter_container_add (CLUTTER_CONTAINER (carousel), actor, NULL);
-  
-  return FALSE;
-}
+#include "gmc-list-view.h"
+#include "gmc-video-controler.h"
 
 int
 main (int argc, char **argv)
 {
-  ClutterActor *stage;
+  ClutterActor *stage, *list_view;
   ClutterScript *script;
+  ClutterModel *list_model;
   GError *error = NULL;
   guint id;
 
@@ -41,10 +26,18 @@ main (int argc, char **argv)
   clutter_script_connect_signals (script, NULL);
 
   stage = CLUTTER_ACTOR (clutter_script_get_object (script, "stage"));
-  carousel = gmc_carousel_new ();
-  clutter_actor_set_size (carousel, CLUTTER_STAGE_WIDTH (), CLUTTER_STAGE_HEIGHT ());
 
-  clutter_container_add (CLUTTER_CONTAINER (stage), carousel, NULL);
+  list_model = clutter_list_model_new (2,
+                                       G_TYPE_INT,      "Score",
+                                       G_TYPE_STRING,   "Team");
+
+  clutter_model_append (list_model, 0, 1, 1, "Team a", -1);
+  clutter_model_append (list_model, 0, 2, 1, "Team b", -1);
+
+  list_view = gmc_list_view_new (list_model, 1);
+  clutter_actor_set_size (list_view, 100, 100);
+
+  clutter_container_add (CLUTTER_CONTAINER (stage), list_view, NULL);
 
   clutter_actor_show_all (stage);
   

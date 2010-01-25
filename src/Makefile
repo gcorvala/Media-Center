@@ -1,4 +1,4 @@
-CC = gcc -g -Wall
+CC = gcc -g
 
 CLUTTER_LIBS = `pkg-config --libs clutter-1.0`
 CLUTTER_CFLAGS = `pkg-config --cflags clutter-1.0`
