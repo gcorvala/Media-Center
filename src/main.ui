@@ -10,10 +10,10 @@
 {
   "id"              : "quit-button",
   "type"            : "GmcButton",
-	"reactive"				:	true,
+  "reactive"        :  true,
   "x"               : 500,
   "y"               : 0,
-	"text"						: "X",
+  "text"            : "X",
   "signals"         : [ { "name" : "button-press-event", "handler" : "clutter_main_quit" } ]
 }
 
@@ -42,33 +42,33 @@
 }
 
 {
-	"id"							: "movies-button",
-	"type"						: "GmcButton",
+  "id"              : "movies-button",
+  "type"            : "GmcButton",
   "reactive"        : true,
-	"text"						: "Movies",
+  "text"            : "Movies",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
 
 {
-	"id"							: "music-button",
-	"type"						: "GmcButton",
+  "id"              : "music-button",
+  "type"            : "GmcButton",
   "reactive"        : true,
-	"text"						: "Music",
+  "text"            : "Music",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
 
 {
-	"id"							: "photos-button",
-	"type"						: "GmcButton",
+  "id"              : "photos-button",
+  "type"            : "GmcButton",
   "reactive"        : true,
-	"text"						: "Photos",
+  "text"            : "Photos",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
 
 {
-	"id"							: "shows-button",
-	"type"						: "GmcButton",
+  "id"              : "shows-button",
+  "type"            : "GmcButton",
   "reactive"        : true,
-	"text"						: "Shows",
+  "text"            : "Shows",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
