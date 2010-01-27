@@ -29,7 +29,6 @@ static guint button_signals[LAST_SIGNAL] = { 0, };
 void
 gmc_button_set_text (GmcButton *self, const gchar *text)
 {
-  g_debug ("%s (%s)", G_STRFUNC, text);
   GmcButtonPrivate *priv;
   ClutterColor *color;
 

@@ -3,31 +3,17 @@
   "type"            : "ClutterStage",
   "color"           : "#000000ff",
   "title"           : "GMediaCenter",
-  "children"        : [ "red-button", "blue-button", "button-1", "button-2" ],
+  "children"        : [ "main-menu", "quit-button" ],
   "signals"         : [ { "name" : "destroy", "handler" : "clutter_main_quit" } ]
 }
 
 {
-  "id"              : "red-button",
-  "type"            : "ClutterRectangle",
-  "width"           : 50,
-  "height"          : 50,
-  "color"           : "#ff0000ff",
-  "x"               : 100,
+  "id"              : "quit-button",
+  "type"            : "GmcButton",
+	"reactive"				:	true,
+  "x"               : 500,
   "y"               : 0,
-  "reactive"        : true,
-  "signals"         : [ { "name" : "button-press-event", "handler" : "clutter_main_quit" } ]
-}
-
-{
-  "id"              : "blue-button",
-  "type"            : "ClutterRectangle",
-  "width"           : 100,
-  "height"          : 100,
-  "color"           : "#0000ffff",
-  "x"               : 0,
-  "y"               : 100,
-  "reactive"        : true,
+	"text"						: "X",
   "signals"         : [ { "name" : "button-press-event", "handler" : "clutter_main_quit" } ]
 }
 
@@ -44,58 +30,45 @@
   "width"           : 200,
   "height"          : 480,
   "layout-manager"  : "layout",
-  "children"        : [ "movie-button", "music-button" ]
+  "children"        : [ "movies-button", "music-button", "photos-button", "shows-button" ]
 }
 
 {
   "id"              : "layout",
   "type"            : "ClutterBoxLayout",
   "pack-start"      : true,
-  "spacing"         : 10,
+  "spacing"         : 15,
   "vertical"        : true
 }
 
 {
-  "id"              : "line",
-  "type"            : "ClutterRectangle",
-  "width"           : 150,
-  "height"          : 2,
-  "color"           : "#a0a0a0ff"
-}
-
-{
-  "id"              : "movie-button",
-  "type"            : "ClutterText",
-  "text"            : "Movie",
-  "color"           : "#808080ff",
-  "font-name"       : "Comic sans MS 12"
-}
-
-{
-  "id"              : "music-button",
-  "type"            : "ClutterText",
-  "text"            : "Music",
-  "color"           : "#808080ff",
-  "font-name"       : "Comic sans MS 12"
-}
-
-{
-	"id"							: "button-1",
+	"id"							: "movies-button",
 	"type"						: "GmcButton",
   "reactive"        : true,
-	"text"						: "button 1",
-	"icon"						: "line",
-	"x"								: 200,
-	"y"								: 200,
+	"text"						: "Movies",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
 
 {
-	"id"							: "button-2",
+	"id"							: "music-button",
 	"type"						: "GmcButton",
   "reactive"        : true,
-	"text"						: "button 2",
-	"x"								: 300,
-	"y"								: 300,
+	"text"						: "Music",
+  "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
+}
+
+{
+	"id"							: "photos-button",
+	"type"						: "GmcButton",
+  "reactive"        : true,
+	"text"						: "Photos",
+  "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
+}
+
+{
+	"id"							: "shows-button",
+	"type"						: "GmcButton",
+  "reactive"        : true,
+	"text"						: "Shows",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }

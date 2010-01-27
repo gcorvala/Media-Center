@@ -31,6 +31,3 @@ main: $(OBJECTS)
 
 clean:
 	rm $(OBJECTS) main
-
-run:
-	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ./main
