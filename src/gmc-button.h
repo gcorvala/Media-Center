@@ -29,10 +29,13 @@ struct _GmcButtonClass
 
 GType           gmc_button_get_type           (void) G_GNUC_CONST;
 
-ClutterActor *  gmc_button_new                (const gchar *text);
-ClutterActor *  gmc_button_new_with_icon      (const gchar *text, ClutterActor *icon);
-void            gmc_button_set_text           (GmcButton *button, const gchar *text);
-const gchar *   gmc_button_get_text           (GmcButton *button);
-void            gmc_button_set_icon           (GmcButton *button, ClutterActor *icon);
+ClutterActor *  gmc_button_new                (void);
+ClutterActor *  gmc_button_new_with_label     (const gchar *label);
+ClutterActor *  gmc_button_new_with_icon      (const gchar *filename);
+ClutterActor *  gmc_button_new_full           (const gchar *label, const gchar *filename);
+
+void            gmc_button_set_label          (GmcButton *button, const gchar *label);
+const gchar *   gmc_button_get_label          (GmcButton *button);
+void            gmc_button_set_icon           (GmcButton *button, const gchar *filename);
 
 G_END_DECLS

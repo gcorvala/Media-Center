@@ -13,7 +13,7 @@
   "reactive"        :  true,
   "x"               : 500,
   "y"               : 0,
-  "text"            : "X",
+  "label"           : "X",
   "signals"         : [ { "name" : "button-press-event", "handler" : "clutter_main_quit" } ]
 }
 
@@ -27,8 +27,6 @@
   "id"              : "main-menu",
   "type"            : "ClutterBox",
   "color"           : "#000000f0",
-  "width"           : 200,
-  "height"          : 480,
   "layout-manager"  : "layout",
   "children"        : [ "movies-button", "music-button", "photos-button", "shows-button" ]
 }
@@ -45,7 +43,7 @@
   "id"              : "movies-button",
   "type"            : "GmcButton",
   "reactive"        : true,
-  "text"            : "Movies",
+  "icon"            : "../img/play.png",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
 
@@ -53,7 +51,7 @@
   "id"              : "music-button",
   "type"            : "GmcButton",
   "reactive"        : true,
-  "text"            : "Music",
+  "label"           : "Music",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
 
@@ -61,7 +59,8 @@
   "id"              : "photos-button",
   "type"            : "GmcButton",
   "reactive"        : true,
-  "text"            : "Photos",
+  "label"           : "Photos",
+  "icon"            : "../img/stop.png",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
 
@@ -69,6 +68,6 @@
   "id"              : "shows-button",
   "type"            : "GmcButton",
   "reactive"        : true,
-  "text"            : "Shows",
+  "label"           : "Shows",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }

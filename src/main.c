@@ -7,7 +7,7 @@
 void
 clicked_cb (GmcButton *button)
 {
-  g_debug ("%s called by %s", G_STRFUNC, gmc_button_get_text (button));
+  g_debug ("%s called by %s", G_STRFUNC, gmc_button_get_label (button));
 }
 
 int

@@ -6,15 +6,18 @@ G_DEFINE_TYPE (GmcButton, gmc_button, CLUTTER_TYPE_ACTOR);
 
 struct _GmcButtonPrivate
 {
+  ClutterActor *label;
   ClutterActor *icon;
-  ClutterActor *text;
 
   gboolean is_pressed;
+  gboolean is_hover;
+
+  gfloat spacing;
 };
 
 enum {
   PROP_0,
-  PROP_TEXT,
+  PROP_LABEL,
   PROP_ICON
 };
 
@@ -27,47 +30,62 @@ enum
 static guint button_signals[LAST_SIGNAL] = { 0, };
 
 void
-gmc_button_set_text (GmcButton *self, const gchar *text)
+gmc_button_set_label (GmcButton *self, const gchar *label)
 {
   GmcButtonPrivate *priv;
   ClutterColor *color;
 
   priv = GMC_BUTTON_GET_PRIVATE (self);
 
-  // TODO check if priv->text->text == text then return
-  if (priv->text) {
-    g_object_unref (priv->text);
+  if (priv->label) {
+    if (g_strcmp0 (label, clutter_text_get_text (CLUTTER_TEXT (priv->label))) == 0)
+      return;
+    clutter_text_set_text (CLUTTER_TEXT (priv->label), label);
+    return;
   }
 
   color = clutter_color_new (0x80, 0x80, 0x80, 0xff);
-  priv->text = clutter_text_new_full ("Comic Sans MS 12", text, color);
-  clutter_actor_set_parent (priv->text, CLUTTER_ACTOR (self));
+  priv->label = clutter_text_new_full ("Comic Sans MS 12", label, color);
+  clutter_actor_set_parent (priv->label, CLUTTER_ACTOR (self));
   clutter_color_free (color);
 }
 
 const gchar *
-gmc_button_get_text (GmcButton *self)
+gmc_button_get_label (GmcButton *self)
 {
   GmcButtonPrivate *priv;
 
   priv = GMC_BUTTON_GET_PRIVATE (self);
 
-  return clutter_text_get_text (CLUTTER_TEXT (priv->text));
+  if (priv->label) {
+    return clutter_text_get_text (CLUTTER_TEXT (priv->label));
+  }
+  else {
+    return NULL;
+  }
 }
 
 void
-gmc_button_set_icon (GmcButton *self, ClutterActor *icon)
+gmc_button_set_icon (GmcButton *self, const gchar *filename)
 {
   GmcButtonPrivate *priv;
+  ClutterActor *icon;
+  GError *error = NULL;
 
   priv = GMC_BUTTON_GET_PRIVATE (self);
+
+  icon = clutter_texture_new_from_file (filename, &error);
+  if (!icon) {
+    g_critical ("%s - %s", G_STRFUNC, error->message);
+    return;
+  }
 
   if (priv->icon) {
     g_object_unref (priv->icon);
   }
 
-  // TODO make a copy or ref
   priv->icon = icon;
+  clutter_actor_set_size (priv->icon, 48, 48);
   clutter_actor_set_parent (priv->icon, CLUTTER_ACTOR (self));
 }
 
@@ -83,12 +101,12 @@ gmc_button_set_property (GObject      *object,
 
   switch (prop_id)
   {
-    case PROP_TEXT:
-      gmc_button_set_text (self, g_value_get_string (value));
+    case PROP_LABEL:
+      gmc_button_set_label (self, g_value_get_string (value));
       break;
 
     case PROP_ICON:
-      gmc_button_set_icon (self, CLUTTER_ACTOR (g_value_get_object (value)));
+      gmc_button_set_icon (self, g_value_get_string (value));
       break;
 
     default:
@@ -109,13 +127,9 @@ gmc_button_get_property (GObject    *object,
 
   switch (prop_id)
   {
-    case PROP_TEXT:
-      g_value_set_string (value, gmc_button_get_text (self));
+    case PROP_LABEL:
+      g_value_set_string (value, gmc_button_get_label (self));
       break;
-
-    /*case PROP_COLUMN:
-      g_value_set_uint (value, priv->column);
-      break;*/
 
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -175,14 +189,72 @@ gmc_button_release_event (ClutterActor       *self,
   return TRUE;
 }
 
+static gboolean
+gmc_button_enter_event (ClutterActor *actor,
+                        ClutterCrossingEvent *event)
+{
+  GmcButton *self;
+  GmcButtonPrivate *priv;
+  ClutterColor *color;
+
+  self = GMC_BUTTON (actor);
+  priv = GMC_BUTTON_GET_PRIVATE (self);
+
+  if (priv->label) {
+    color = clutter_color_new (0xff, 0xff, 0xff, 0xff);
+    clutter_text_set_color (CLUTTER_TEXT (priv->label), color);
+    clutter_color_free (color);
+  }
+
+  priv->is_hover = TRUE;
+
+  return TRUE;
+}
+
+static gboolean
+gmc_button_leave_event (ClutterActor *actor,
+                        ClutterCrossingEvent *event)
+{
+  GmcButton *self;
+  GmcButtonPrivate *priv;
+  ClutterColor *color;
+
+  self = GMC_BUTTON (actor);
+  priv = GMC_BUTTON_GET_PRIVATE (self);
+
+  if (priv->label) {
+    color = clutter_color_new (0x80, 0x80, 0x80, 0xff);
+    clutter_text_set_color (CLUTTER_TEXT (priv->label), color);
+    clutter_color_free (color);
+  }
+
+  priv->is_hover = FALSE;
+
+  return TRUE;
+}
+
 static void
 gmc_button_get_preferred_width (ClutterActor *actor,
                                 gfloat        for_height,
                                 gfloat       *min_width_p,
                                 gfloat       *natural_width_p)
 {
-  *min_width_p = 100;
-  *natural_width_p = 100;
+  GmcButton *self;
+  GmcButtonPrivate *priv;
+  gfloat icon_w_min = 0, icon_w_nat = 0, label_w_min = 0, label_w_nat = 0;
+
+  self = GMC_BUTTON (actor);
+  priv = GMC_BUTTON_GET_PRIVATE (self);
+
+  if (priv->icon) {
+    clutter_actor_get_preferred_width (priv->icon, for_height, &icon_w_min, &icon_w_nat);
+  }
+  if (priv->label) {
+    clutter_actor_get_preferred_width (priv->label, for_height, &label_w_min, &label_w_nat);
+  }
+
+  *min_width_p = icon_w_min + priv->spacing + label_w_min;
+  *natural_width_p = icon_w_nat + priv->spacing + label_w_nat;
 }
 
 static void
@@ -191,8 +263,22 @@ gmc_button_get_preferred_height (ClutterActor *actor,
                                  gfloat       *min_height_p,
                                  gfloat       *natural_height_p)
 {
-  *min_height_p = 25;
-  *natural_height_p = 25;
+  GmcButton *self;
+  GmcButtonPrivate *priv;
+  gfloat icon_h_min = 0, icon_h_nat = 0, label_h_min = 0, label_h_nat = 0;
+
+  self = GMC_BUTTON (actor);
+  priv = GMC_BUTTON_GET_PRIVATE (self);
+
+  if (priv->icon) {
+    clutter_actor_get_preferred_height (priv->icon, for_width, &icon_h_min, &icon_h_nat);
+  }
+  if (priv->label) {
+    clutter_actor_get_preferred_height (priv->label, for_width, &label_h_min, &label_h_nat);
+  }
+
+  *min_height_p = MAX (icon_h_min, label_h_min);
+  *natural_height_p = MAX (icon_h_nat, label_h_nat);
 }
 
 static void
@@ -203,6 +289,9 @@ gmc_button_allocate (ClutterActor           *actor,
   GmcButtonPrivate *priv;
   ClutterActorBox *actor_box;
   gfloat width, height;
+  gfloat icon_w_min = 0, icon_h_min = 0, icon_w_nat = 0, icon_h_nat = 0;
+  gfloat label_w_min = 0, label_h_min = 0, label_w_nat = 0, label_h_nat = 0;
+  gfloat spacing = 0;
 
   priv = GMC_BUTTON_GET_PRIVATE (actor);
   CLUTTER_ACTOR_CLASS (gmc_button_parent_class)->allocate (actor, box, flags);
@@ -211,14 +300,21 @@ gmc_button_allocate (ClutterActor           *actor,
                               &width,
                               &height);
 
+  // TODO if icon_h < label_h, center icon
+  //      if icon_h > label_h, center label
   if (priv->icon) {
-    actor_box = clutter_actor_box_new (0, 0, 24, 25);
+    clutter_actor_get_preferred_width (priv->icon, height, &icon_w_min, &icon_w_nat);
+    clutter_actor_get_preferred_height (priv->icon, width, &icon_h_min, &icon_h_nat);
+    actor_box = clutter_actor_box_new (0, 0, icon_w_min, icon_h_min);
     clutter_actor_allocate (priv->icon, actor_box, flags);
     clutter_actor_box_free (actor_box);
+    spacing = priv->spacing;
   }
-  if (priv->text) {
-    actor_box = clutter_actor_box_new (26, 0, width, 25);
-    clutter_actor_allocate (priv->text, actor_box, flags);
+  if (priv->label) {
+    clutter_actor_get_preferred_width (priv->label, height, &label_w_min, &label_w_nat);
+    clutter_actor_get_preferred_height (priv->label, width, &label_h_min, &label_h_nat);
+    actor_box = clutter_actor_box_new (icon_w_min + spacing, 0, label_w_min, 25);
+    clutter_actor_allocate (priv->label, actor_box, flags);
     clutter_actor_box_free (actor_box);
   }
 }
@@ -233,8 +329,8 @@ gmc_button_paint (ClutterActor *self)
   if (priv->icon) {
     clutter_actor_paint (priv->icon);
   }
-  if (priv->text) {
-    clutter_actor_paint (priv->text);
+  if (priv->label) {
+    clutter_actor_paint (priv->label);
   }
 }
 
@@ -251,8 +347,8 @@ gmc_button_pick (ClutterActor       *self,
   if (priv->icon) {
     clutter_actor_paint (priv->icon);
   }
-  if (priv->text) {
-    clutter_actor_paint (priv->text);
+  if (priv->label) {
+    clutter_actor_paint (priv->label);
   }
 }
 
@@ -268,8 +364,8 @@ gmc_button_map (ClutterActor *self)
   if (priv->icon) {
     clutter_actor_map (priv->icon);
   }
-  if (priv->text) {
-    clutter_actor_map (priv->text);
+  if (priv->label) {
+    clutter_actor_map (priv->label);
   }
 }
 
@@ -285,8 +381,8 @@ gmc_button_unmap (ClutterActor *self)
   if (priv->icon) {
     clutter_actor_unmap (priv->icon);
   }
-  if (priv->text) {
-    clutter_actor_unmap (priv->text);
+  if (priv->label) {
+    clutter_actor_unmap (priv->label);
   }
 }
 static void
@@ -305,9 +401,9 @@ gmc_button_class_init (GmcButtonClass *klass)
   actor_class->button_press_event = gmc_button_press_event;
   actor_class->button_release_event = gmc_button_release_event;
   /*actor_class->key_press_event
-  actor_class->key_release_event
-  actor_class->enter_event
-  actor_class->leave_event*/
+  actor_class->key_release_event*/
+  actor_class->enter_event = gmc_button_enter_event;
+  actor_class->leave_event = gmc_button_leave_event;
 
   actor_class->get_preferred_width = gmc_button_get_preferred_width;
   actor_class->get_preferred_height = gmc_button_get_preferred_height;
@@ -318,20 +414,20 @@ gmc_button_class_init (GmcButtonClass *klass)
   actor_class->unmap = gmc_button_unmap;
 
   g_object_class_install_property (object_class,
-                                   PROP_TEXT,
-                                   g_param_spec_string ("text",
-                                                      "Text",
-                                                      "The button text",
-                                                      "Default",
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT));
+                                   PROP_LABEL,
+                                   g_param_spec_string ("label",
+                                                      "Label",
+                                                      "The button label",
+                                                      NULL,
+                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
 
   g_object_class_install_property (object_class,
                                    PROP_ICON,
-                                   g_param_spec_object ("icon",
+                                   g_param_spec_string ("icon",
                                                         "Icon",
                                                         "The button icon",
-                                                        CLUTTER_TYPE_ACTOR,
-                                                        G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                        NULL,
+                                                        G_PARAM_WRITABLE));
 
   button_signals[CLICKED] = g_signal_new ("clicked",
                                           G_TYPE_FROM_CLASS (klass),
@@ -351,28 +447,53 @@ gmc_button_init (GmcButton *self)
   priv = GMC_BUTTON_GET_PRIVATE (self);
 
   priv->is_pressed = FALSE;
+  priv->is_hover = FALSE;
+
+  priv->spacing = 10;
 }
 
 ClutterActor *
-gmc_button_new (const gchar *text)
+gmc_button_new (void)
+{
+  GObject *self;
+
+  self = g_object_new (GMC_TYPE_BUTTON, NULL);
+
+  return CLUTTER_ACTOR (self);
+}
+
+ClutterActor *
+gmc_button_new_with_label (const gchar *label)
 {
   GObject *self;
 
   self = g_object_new (GMC_TYPE_BUTTON,
-                       "text", text,
+                       "label", label,
                        NULL);
 
   return CLUTTER_ACTOR (self);
 }
 
 ClutterActor *
-gmc_button_new_with_icon (const gchar *text, ClutterActor *icon)
+gmc_button_new_with_icon (const gchar *filename)
 {
   GObject *self;
 
   self = g_object_new (GMC_TYPE_BUTTON,
-                       "text", text,
-                       "icon", icon,
+                       "icon", filename,
+                       NULL);
+
+  return CLUTTER_ACTOR (self);
+}
+
+ClutterActor *
+gmc_button_new_full (const gchar *label, const gchar *filename)
+{
+  GObject *self;
+
+  self = g_object_new (GMC_TYPE_BUTTON,
+                       "label", label,
+                       "icon", filename,
                        NULL);
 
   return CLUTTER_ACTOR (self);
