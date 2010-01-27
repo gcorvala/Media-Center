@@ -3,10 +3,16 @@
 #include "gmc-list-view.h"
 #include "gmc-video-controler.h"
 
+void
+clicked_cb (void)
+{
+  g_debug ("%s called", G_STRFUNC);
+}
+
 int
 main (int argc, char **argv)
 {
-  ClutterActor *stage, *list_view;
+  ClutterActor *stage, *list_view, *background;
   ClutterScript *script;
   ClutterModel *list_model;
   GError *error = NULL;
@@ -26,18 +32,19 @@ main (int argc, char **argv)
   clutter_script_connect_signals (script, NULL);
 
   stage = CLUTTER_ACTOR (clutter_script_get_object (script, "stage"));
+  //clutter_stage_set_fullscreen (CLUTTER_STAGE (stage), TRUE);
 
-  list_model = clutter_list_model_new (2,
+  background = CLUTTER_ACTOR (clutter_script_get_object (script, "background"));
+  clutter_actor_set_size (background, CLUTTER_STAGE_WIDTH (), CLUTTER_STAGE_HEIGHT ());
+  /*list_model = clutter_list_model_new (2,
                                        G_TYPE_INT,      "Score",
                                        G_TYPE_STRING,   "Team");
 
   clutter_model_append (list_model, 0, 1, 1, "Team a", -1);
-  clutter_model_append (list_model, 0, 2, 1, "Team b", -1);
+  clutter_model_append (list_model, 0, 2, 1, "Team b", -1);*/
 
-  list_view = gmc_list_view_new (list_model, 1);
-  clutter_actor_set_size (list_view, 100, 100);
-
-  clutter_container_add (CLUTTER_CONTAINER (stage), list_view, NULL);
+  //list_view = gmc_list_view_new (list_model, 1);
+  //clutter_actor_set_size (list_view, 100, 100);
 
   clutter_actor_show_all (stage);
   

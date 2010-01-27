@@ -1,22 +1,90 @@
 {
-  "id"       : "stage",
-  "type"     : "ClutterStage",
-  "color"    : "#00ff00ff",
-  "title"    : "GMediaCenter",
-  "width"    : 640,
-  "height"   : 480,
-  "children" : [ "red-button" ]
-  "signals"  : [ { "name" : "destroy", "handler" : "clutter_main_quit" } ]
+  "id"              : "stage",
+  "type"            : "ClutterStage",
+  "color"           : "#000000ff",
+  "title"           : "GMediaCenter",
+  "children"        : [ "red-button", "blue-button", "button" ],
+  "signals"         : [ { "name" : "destroy", "handler" : "clutter_main_quit" } ]
 }
 
 {
-  "id"      : "red-button",
-  "type"    : "ClutterRectangle",
-  "width"   : 100,
-  "height"  : 100,
-  "color"   : "#0000ffff",
-  "x"       : 320,
-  "y"       : 240,
-  "reactive": true,
-  "signals" : [ { "name" : "button-press-event", "handler" : "clutter_main_quit" } ]
+  "id"              : "red-button",
+  "type"            : "ClutterRectangle",
+  "width"           : 100,
+  "height"          : 100,
+  "color"           : "#ff0000ff",
+  "x"               : 100,
+  "y"               : 0,
+  "reactive"        : true,
+  "signals"         : [ { "name" : "button-press-event", "handler" : "clutter_main_quit" } ]
+}
+
+{
+  "id"              : "blue-button",
+  "type"            : "ClutterRectangle",
+  "width"           : 100,
+  "height"          : 100,
+  "color"           : "#0000ffff",
+  "x"               : 0,
+  "y"               : 100,
+  "reactive"        : true,
+  "signals"         : [ { "name" : "button-press-event", "handler" : "clutter_main_quit" } ]
+}
+
+{
+  "id"              : "background",
+  "type"            : "ClutterTexture",
+  "filename"        : "../data/bg.jpg"
+}
+
+{
+  "id"              : "main-menu",
+  "type"            : "ClutterBox",
+  "color"           : "#000000f0",
+  "width"           : 200,
+  "height"          : 480,
+  "layout-manager"  : "layout",
+  "children"        : [ "movie-button", "line", "music-button" ]
+}
+
+{
+  "id"              : "layout",
+  "type"            : "ClutterBoxLayout",
+  "pack-start"      : true,
+  "spacing"         : 10,
+  "vertical"        : true
+}
+
+{
+  "id"              : "line",
+  "type"            : "ClutterRectangle",
+  "width"           : 150,
+  "height"          : 2,
+  "color"           : "#a0a0a0ff"
+}
+
+{
+  "id"              : "movie-button",
+  "type"            : "ClutterText",
+  "text"            : "Movie",
+  "color"           : "#808080ff",
+  "font-name"       : "Comic sans MS 12"
+}
+
+{
+  "id"              : "music-button",
+  "type"            : "ClutterText",
+  "text"            : "Music",
+  "color"           : "#808080ff",
+  "font-name"       : "Comic sans MS 12"
+}
+
+{
+	"id"							: "button",
+	"type"						: "GmcButton",
+	"color"           : "#00ff00ff",
+	"height"					: 300,
+	"width"						: 300,
+  "reactive"        : true,
+  "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
