@@ -2,11 +2,12 @@
 #include "gmc-carousel.h"
 #include "gmc-list-view.h"
 #include "gmc-video-controler.h"
+#include "gmc-button.h"
 
 void
-clicked_cb (void)
+clicked_cb (GmcButton *button)
 {
-  g_debug ("%s called", G_STRFUNC);
+  g_debug ("%s called by %s", G_STRFUNC, gmc_button_get_text (button));
 }
 
 int

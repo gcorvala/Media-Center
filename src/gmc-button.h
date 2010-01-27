@@ -24,11 +24,15 @@ struct _GmcButtonClass
 {
   ClutterRectangleClass parent_class;
   
-  void (* clicked) (void);
+  void (* clicked) (GmcButton *button);
 }; 
 
 GType           gmc_button_get_type           (void) G_GNUC_CONST;
 
-ClutterActor *  gmc_button_new                (gchar *name);
+ClutterActor *  gmc_button_new                (const gchar *text);
+ClutterActor *  gmc_button_new_with_icon      (const gchar *text, ClutterActor *icon);
+void            gmc_button_set_text           (GmcButton *button, const gchar *text);
+const gchar *   gmc_button_get_text           (GmcButton *button);
+void            gmc_button_set_icon           (GmcButton *button, ClutterActor *icon);
 
 G_END_DECLS
