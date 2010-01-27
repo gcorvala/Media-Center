@@ -15,14 +15,14 @@ typedef struct _GmcButtonClass   GmcButtonClass;
 
 struct _GmcButton
 {
-  ClutterRectangle              parent;
+  ClutterActor              parent;
   /*< priv >*/
   GmcButtonPrivate *priv;
 };
 
 struct _GmcButtonClass 
 {
-  ClutterRectangleClass parent_class;
+  ClutterActorClass parent_class;
   
   void (* clicked) (GmcButton *button);
 }; 

@@ -1,6 +1,6 @@
 #include "gmc-button.h"
 
-G_DEFINE_TYPE (GmcButton, gmc_button, CLUTTER_TYPE_RECTANGLE);
+G_DEFINE_TYPE (GmcButton, gmc_button, CLUTTER_TYPE_ACTOR);
 
 #define GMC_BUTTON_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GMC_TYPE_BUTTON, GmcButtonPrivate))
 
@@ -230,8 +230,6 @@ gmc_button_paint (ClutterActor *self)
   GmcButtonPrivate *priv;
 
   priv = GMC_BUTTON_GET_PRIVATE (self);
-
-  CLUTTER_ACTOR_CLASS (gmc_button_parent_class)->paint (self);
 
   if (priv->icon) {
     clutter_actor_paint (priv->icon);
