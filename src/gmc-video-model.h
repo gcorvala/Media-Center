@@ -27,6 +27,6 @@ struct _GmcVideoModelClass
 
 GType           gmc_video_model_get_type           (void) G_GNUC_CONST;
 
-ClutterModel *  gmc_video_model_new                ();
+ClutterModel *  gmc_video_model_new                (const gchar *filename);
 
 G_END_DECLS

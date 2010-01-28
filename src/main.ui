@@ -3,7 +3,7 @@
   "type"            : "ClutterStage",
   "color"           : "#000000ff",
   "title"           : "GMediaCenter",
-  "children"        : [ "main-menu", "quit-button" ],
+  "children"        : [ "main-menu", "quit-button", "background" ],
   "signals"         : [ { "name" : "destroy", "handler" : "clutter_main_quit" } ]
 }
 
@@ -13,8 +13,8 @@
   "reactive"        :  true,
   "x"               : 500,
   "y"               : 0,
-  "label"           : "X",
-  "signals"         : [ { "name" : "button-press-event", "handler" : "clutter_main_quit" } ]
+  "label"           : "Y",
+  "signals"         : [ { "name" : "clicked", "handler" : "clutter_main_quit" } ]
 }
 
 {
@@ -26,8 +26,10 @@
 {
   "id"              : "main-menu",
   "type"            : "ClutterBox",
-  "color"           : "#000000f0",
+  "color"           : "#000000d0",
   "layout-manager"  : "layout",
+  "height"          : 800,
+  "width"           : 200,
   "children"        : [ "movies-button", "music-button", "photos-button", "shows-button" ]
 }
 
@@ -35,7 +37,7 @@
   "id"              : "layout",
   "type"            : "ClutterBoxLayout",
   "pack-start"      : true,
-  "spacing"         : 15,
+  "spacing"         : 10,
   "vertical"        : true
 }
 

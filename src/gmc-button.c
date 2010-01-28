@@ -85,7 +85,7 @@ gmc_button_set_icon (GmcButton *self, const gchar *filename)
   }
 
   priv->icon = icon;
-  clutter_actor_set_size (priv->icon, 48, 48);
+  clutter_actor_set_size (priv->icon, 24, 24);
   clutter_actor_set_parent (priv->icon, CLUTTER_ACTOR (self));
 }
 
@@ -416,10 +416,10 @@ gmc_button_class_init (GmcButtonClass *klass)
   g_object_class_install_property (object_class,
                                    PROP_LABEL,
                                    g_param_spec_string ("label",
-                                                      "Label",
-                                                      "The button label",
-                                                      NULL,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                        "Label",
+                                                        "The button label",
+                                                        NULL,
+                                                        G_PARAM_READABLE | G_PARAM_WRITABLE));
 
   g_object_class_install_property (object_class,
                                    PROP_ICON,

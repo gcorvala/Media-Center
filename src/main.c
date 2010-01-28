@@ -1,8 +1,6 @@
 #include <clutter/clutter.h>
-#include "gmc-carousel.h"
-#include "gmc-list-view.h"
-#include "gmc-video-controler.h"
 #include "gmc-button.h"
+#include "gmc-video-model.h"
 
 void
 clicked_cb (GmcButton *button)
@@ -37,12 +35,14 @@ main (int argc, char **argv)
 
   background = CLUTTER_ACTOR (clutter_script_get_object (script, "background"));
   clutter_actor_set_size (background, CLUTTER_STAGE_WIDTH (), CLUTTER_STAGE_HEIGHT ());
-  /*list_model = clutter_list_model_new (2,
-                                       G_TYPE_INT,      "Score",
-                                       G_TYPE_STRING,   "Team");
 
-  clutter_model_append (list_model, 0, 1, 1, "Team a", -1);
-  clutter_model_append (list_model, 0, 2, 1, "Team b", -1);*/
+  list_model = gmc_video_model_new ("movie.db");
+  g_debug ("n_rows : %d", clutter_model_get_n_rows (list_model));
+  g_debug ("n_columns : %d", clutter_model_get_n_columns (list_model));
+  g_debug ("column 0 name : %s", clutter_model_get_column_name (list_model, 0));
+  g_debug ("column 1 name : %s", clutter_model_get_column_name (list_model, 1));
+  g_debug ("column 2 name : %s", clutter_model_get_column_name (list_model, 2));
+  //clutter_model_insert (list_model, 10, -1);
 
   //list_view = gmc_list_view_new (list_model, 1);
   //clutter_actor_set_size (list_view, 100, 100);
