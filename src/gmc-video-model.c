@@ -12,11 +12,9 @@ static const gchar *TABLE = "Movie";
 #define GMC_VIDEO_MODEL_ITER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GMC_TYPE_VIDEO_MODEL_ITER, GmcVideoModelIterClass))
 
 typedef struct _GmcVideoModelIter        GmcVideoModelIter;
-typedef struct _GmcVideoModelIterPrivate GmcVideoModelIterPrivate;
 typedef struct _GmcVideoModelIterClass   GmcVideoModelIterClass;
 
 #define GMC_VIDEO_MODEL_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GMC_TYPE_VIDEO_MODEL, GmcVideoModelPrivate))
-#define GMC_VIDEO_MODEL_ITER_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GMC_TYPE_VIDEO_MODEL_ITER, GmcVideoModelIterPrivate))
 
 struct _GmcVideoModelPrivate
 {
@@ -27,18 +25,11 @@ struct _GmcVideoModelPrivate
 struct _GmcVideoModelIter
 {
   ClutterModelIter              parent;
-  /*< priv >*/
-  GmcVideoModelIterPrivate *priv;
 };
 
 struct _GmcVideoModelIterClass 
 {
   ClutterModelIterClass parent_class;
-};
-
-struct _GmcVideoModelIterPrivate
-{
-  gchar *title;
 };
 
 const gchar *names [] = {
@@ -65,60 +56,39 @@ GType types [] = {
 
 G_DEFINE_TYPE (GmcVideoModelIter, gmc_video_model_iter, CLUTTER_TYPE_MODEL_ITER);
 
-enum {
-  PROP_00,
-  PROP_TITLE
-};
-
-static void
-gmc_video_model_iter_set_property (GObject      *object,
-                                   guint         prop_id,
-                                   const GValue *value,
-                                   GParamSpec   *pspec)
-{
-  GmcVideoModelIterPrivate *priv;
-
-  priv = GMC_VIDEO_MODEL_ITER_GET_PRIVATE (object);
-
-  switch (prop_id)
-  {
-    case PROP_TITLE:
-      if (priv->title) {
-        g_free (priv->title);
-      }
-      priv->title = g_strdup (g_value_get_string (value));
-      break;
-
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
-  }
-}
-
 static void
 gmc_video_model_iter_get_value (ClutterModelIter *iter, 
                                 guint             column, 
                                 GValue           *value)
 {
-  g_debug ("%s", G_STRFUNC);
   ClutterModel *model;
+  guint row;
   GmcVideoModelPrivate *priv_model;
-  GmcVideoModelIterPrivate *priv_iter;
   const gchar *name;
-  gchar *query, *string_value;
+  gchar *query, *string_value, *tmp;
   sqlite3_stmt *statement;
   gint error_code;
-  guint uint_value;
+  guint uint_value, sort_column;
   GType type;
 
   model = clutter_model_iter_get_model (iter);
+  row = clutter_model_iter_get_row (iter);
   priv_model = GMC_VIDEO_MODEL_GET_PRIVATE (model);
-  priv_iter = GMC_VIDEO_MODEL_ITER_GET_PRIVATE (iter);
 
   name = clutter_model_get_column_name (model, column);
 
-  query = g_strdup_printf ("SELECT %s FROM %s WHERE Title = '%s'", name, TABLE, priv_iter->title);
-  g_debug ("%s : %s", G_STRFUNC, query);
+  query = g_strdup_printf ("SELECT %s FROM %s", name, TABLE);
+
+  sort_column = clutter_model_get_sorting_column (model);
+  if (sort_column != -1) {
+    tmp = g_strdup_printf ("%s ORDER BY %s", query, clutter_model_get_column_name (model, sort_column));
+    g_free (query);
+    query = tmp;
+  }
+
+  tmp = g_strdup_printf ("%s LIMIT %d, 1", query, row);
+  g_free (query);
+  query = tmp;
 
   error_code = sqlite3_prepare_v2 (priv_model->sql, query, strlen (query), &statement, NULL);
   g_free (query);
@@ -155,19 +125,17 @@ gmc_video_model_iter_set_value (ClutterModelIter *iter,
                                 guint             column, 
                                 const GValue     *value)
 {
-  g_debug ("%s", G_STRFUNC);
   ClutterModel *model;
   GmcVideoModelPrivate *priv_model;
-  GmcVideoModelIterPrivate *priv_iter;
   const gchar *name;
   gchar *query, *str_value;
   sqlite3_stmt *statement;
   gint error_code;
   GType type;
+  GValue title_value = {0, };
 
   model = clutter_model_iter_get_model (iter);
   priv_model = GMC_VIDEO_MODEL_GET_PRIVATE (model);
-  priv_iter = GMC_VIDEO_MODEL_ITER_GET_PRIVATE (iter);
 
   name = clutter_model_get_column_name (model, column);
   type = clutter_model_get_column_type (model, column);
@@ -186,7 +154,8 @@ gmc_video_model_iter_set_value (ClutterModelIter *iter,
       break;
   }
 
-  query = g_strdup_printf ("UPDATE %s SET %s = '%s' WHERE Title = '%s'", TABLE, name, str_value, priv_iter->title);
+  clutter_model_iter_get_value (iter, 0, &title_value);
+  query = g_strdup_printf ("UPDATE %s SET %s = '%s' WHERE Title = '%s'", TABLE, name, str_value, g_value_get_string (&title_value));
 
   error_code = sqlite3_prepare_v2 (priv_model->sql, query, strlen (query), &statement, NULL);
   g_free (query);
@@ -202,26 +171,26 @@ gmc_video_model_iter_set_value (ClutterModelIter *iter,
   }
 
   sqlite3_finalize (statement);
-
-  if (g_strcmp0 (name, "Title") == 0) {
-    g_free (priv_iter->title);
-    priv_iter->title = g_strdup (str_value);
-  }
 }
 
 static ClutterModelIter *
 gmc_video_model_iter_next (ClutterModelIter *iter)
 {
   ClutterModel *model;
-  guint *row;
+  guint row, n_rows;
 
   model = clutter_model_iter_get_model (iter);
   row = clutter_model_iter_get_row (iter);
+  n_rows = clutter_model_get_n_rows (model);
+
   g_object_unref (iter);
 
+  if (row == (n_rows - 1)) {
+    return NULL;
+  }
   iter = g_object_new (GMC_TYPE_VIDEO_MODEL_ITER,
                        "model", model,
-                       "row", row,
+                       "row", row + 1,
                        NULL);
   return iter;
 }
@@ -229,17 +198,13 @@ gmc_video_model_iter_next (ClutterModelIter *iter)
 static ClutterModelIter *
 gmc_video_model_iter_prev (ClutterModelIter *iter)
 {
+  return NULL;
 }
 
 static void
 gmc_video_model_iter_class_init (GmcVideoModelIterClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   ClutterModelIterClass *model_iter_class = CLUTTER_MODEL_ITER_CLASS (klass);
-
-  g_type_class_add_private (object_class, sizeof (GmcVideoModelIterPrivate));
-
-  object_class->set_property = gmc_video_model_iter_set_property;
 
   model_iter_class->get_value = gmc_video_model_iter_get_value;
   model_iter_class->set_value = gmc_video_model_iter_set_value;
@@ -250,34 +215,12 @@ gmc_video_model_iter_class_init (GmcVideoModelIterClass *klass)
 
   model_iter_class->next = gmc_video_model_iter_next;
   model_iter_class->prev = gmc_video_model_iter_prev;
-  
-  /*
-  ClutterModelIter *(* next)      (ClutterModelIter *iter);
-  ClutterModelIter *(* prev)      (ClutterModelIter *iter);
-
-  ClutterModel *    (* get_model) (ClutterModelIter *iter);
-  guint             (* get_row)   (ClutterModelIter *iter);
-
-  ClutterModelIter *(* copy)      (ClutterModelIter *iter);
-  */
-
-  g_object_class_install_property (object_class,
-                                   PROP_TITLE,
-                                   g_param_spec_string ("title",
-                                                        "Title",
-                                                        "The movie title",
-                                                        "_",
-                                                        G_PARAM_WRITABLE | G_PARAM_CONSTRUCT));
 }
 
 static void
 gmc_video_model_iter_init (GmcVideoModelIter *self)
 {
-  GmcVideoModelIterPrivate *priv;
-
-  priv = GMC_VIDEO_MODEL_ITER_GET_PRIVATE (self);
-
-  priv->title = g_strdup ("_");
+  ;
 }
 
 /*
@@ -425,10 +368,13 @@ gmc_video_model_insert_row (ClutterModel *model,
   GmcVideoModelIter *iter;
   GmcVideoModelPrivate *priv;
   sqlite3_stmt *statement;
+  guint n_rows;
   gint error_code;
   gchar *query;
 
   priv = GMC_VIDEO_MODEL_GET_PRIVATE (model);
+
+  n_rows = clutter_model_get_n_rows (model);
 
   query = g_strdup_printf ("INSERT INTO %s (Title) VALUES ('_')", TABLE);
 
@@ -449,10 +395,8 @@ gmc_video_model_insert_row (ClutterModel *model,
 
   iter = g_object_new (GMC_TYPE_VIDEO_MODEL_ITER,
                        "model", model,
-                       "row", -1,
+                       "row", n_rows,
                        NULL);
-
-  g_debug ("iter %p", iter);
 
   return CLUTTER_MODEL_ITER (iter);
 }
@@ -461,7 +405,6 @@ static void
 gmc_video_model_remove_row (ClutterModel *model,
                             guint         row)
 {
-  
 }
 
 static ClutterModelIter *
@@ -470,27 +413,25 @@ gmc_video_model_get_iter_at_row (ClutterModel *model,
 {
   GmcVideoModelPrivate *priv;
   GmcVideoModelIter *iter;
-  gchar *query, *order_query, *tmp, *title;
-  const gchar *column_name;
+  gchar *query, *tmp;
   gint column;
   sqlite3_stmt *statement;
   gint error_code;
 
   priv = GMC_VIDEO_MODEL_GET_PRIVATE (model);
 
-  query = g_strdup_printf ("SELECT Title FROM %s LIMIT %d, 1", TABLE, row);
+  query = g_strdup_printf ("SELECT Title FROM %s", TABLE);
 
   column = clutter_model_get_sorting_column (model);
   if (column != -1) {
-    column_name = clutter_model_get_column_name (model, column);
-    order_query = g_strdup_printf (" ORDER BY %s", column_name);
-    tmp = query;
-    query = g_strconcat (query, order_query, NULL);
-    g_free (tmp);
-    g_free (order_query);
+    tmp = g_strdup_printf ("%s ORDER BY %s", query, clutter_model_get_column_name (model, column));
+    g_free (query);
+    query = tmp;
   }
 
-  g_debug ("%s : %s", G_STRFUNC, query);
+  tmp = g_strdup_printf ("%s LIMIT %d, 1", query, row);
+  g_free (query);
+  query = tmp;
 
   error_code = sqlite3_prepare_v2 (priv->sql, query, strlen (query), &statement, NULL);
   g_free (query);
@@ -505,16 +446,11 @@ gmc_video_model_get_iter_at_row (ClutterModel *model,
     return 0;
   }
 
-  title = g_strdup ((gchar *) sqlite3_column_text (statement, 0));
-
   sqlite3_finalize (statement);
-
-  g_debug ("%s : title %s", G_STRFUNC, title);
 
   iter = g_object_new (GMC_TYPE_VIDEO_MODEL_ITER,
                        "model", model,
                        "row", row,
-                       "title", title,
                        NULL);
 
   return CLUTTER_MODEL_ITER (iter);
@@ -525,7 +461,6 @@ gmc_video_model_resort (ClutterModel         *model,
                         ClutterModelSortFunc  func,
                         gpointer              data)
 {
-  
 }
 
 static void
@@ -541,9 +476,9 @@ gmc_video_model_class_init (GmcVideoModelClass *klass)
 
   model_class->get_n_rows = gmc_video_model_get_n_rows;
   model_class->insert_row = gmc_video_model_insert_row;
-  //model_class->remove_row = gmc_video_model_remove_row;
+  model_class->remove_row = gmc_video_model_remove_row;
   model_class->get_iter_at_row = gmc_video_model_get_iter_at_row;
-  //model_class->resort = gmc_video_model_resort;
+  model_class->resort = gmc_video_model_resort;
 
   g_object_class_install_property (object_class,
                                    PROP_FILENAME,
@@ -564,7 +499,6 @@ gmc_video_model_init (GmcVideoModel *self)
   clutter_model_set_types (CLUTTER_MODEL (self),
                            G_N_ELEMENTS (types),
                            types);
-  //clutter_model_set_sorting_column (CLUTTER_MODEL (self), 0);
 }
 
 ClutterModel *
