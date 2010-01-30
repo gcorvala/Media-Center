@@ -11,11 +11,12 @@ clicked_cb (GmcButton *button)
 int
 main (int argc, char **argv)
 {
-  ClutterActor *stage, *list_view, *background;
+  ClutterActor *stage, *background;
   ClutterScript *script;
   ClutterModel *list_model;
   GError *error = NULL;
   guint id;
+  gint n, i;
 
   clutter_init (&argc, &argv);
 
@@ -31,21 +32,17 @@ main (int argc, char **argv)
   clutter_script_connect_signals (script, NULL);
 
   stage = CLUTTER_ACTOR (clutter_script_get_object (script, "stage"));
-  //clutter_stage_set_fullscreen (CLUTTER_STAGE (stage), TRUE);
 
   background = CLUTTER_ACTOR (clutter_script_get_object (script, "background"));
   clutter_actor_set_size (background, CLUTTER_STAGE_WIDTH (), CLUTTER_STAGE_HEIGHT ());
 
   list_model = gmc_video_model_new ("movie.db");
   g_debug ("n_rows : %d", clutter_model_get_n_rows (list_model));
-  g_debug ("n_columns : %d", clutter_model_get_n_columns (list_model));
-  g_debug ("column 0 name : %s", clutter_model_get_column_name (list_model, 0));
-  g_debug ("column 1 name : %s", clutter_model_get_column_name (list_model, 1));
-  g_debug ("column 2 name : %s", clutter_model_get_column_name (list_model, 2));
-  //clutter_model_insert (list_model, 10, -1);
-
-  //list_view = gmc_list_view_new (list_model, 1);
-  //clutter_actor_set_size (list_view, 100, 100);
+  n = clutter_model_get_n_columns (list_model);
+  g_debug ("n_columns : %d", n);
+  for (i = 0; i < n; ++i)
+    g_debug ("column %d name : %s", i, clutter_model_get_column_name (list_model, i));
+  clutter_model_append (list_model, 0, "hello", 1, 2007, -1);
 
   clutter_actor_show_all (stage);
   
