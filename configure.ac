@@ -1,0 +1,27 @@
+AC_PREREQ(2.65)
+AC_INIT([GMC], [1.0.0], [just.the.boss@gmail.com])
+
+GMC_CURRENT=1
+GMC_AGE=0
+GMC_REVISION=0
+
+AC_SUBST(GMC_CURRENT)
+AC_SUBST(GMC_AGE)
+AC_SUBST(GMC_REVISION)
+
+GLIB_REQUIRED=2.23.0
+
+AC_CONFIG_MACRO_DIR(m4)
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([configure.ac])
+AC_CONFIG_AUX_DIR(.)
+
+AM_INIT_AUTOMAKE(-Wall -Werror foreign)
+
+PKG_CHECK_MODULES(GMC, [glib-2.0 clutter-1.0 sqlite3])
+
+AC_PROG_CC
+AC_CONFIG_FILES([Makefile
+  src/Makefile
+  ])
+AC_OUTPUT
