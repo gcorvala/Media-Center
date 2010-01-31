@@ -9,3 +9,8 @@ main_SOURCES = \
 	main.c \
 	gmc-button.c \
 	gmc-video-model.c
+
+uidir = $(datadir)/gmc
+
+ui_DATA = \
+	main.ui
