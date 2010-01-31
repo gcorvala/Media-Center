@@ -21,8 +21,8 @@ AM_INIT_AUTOMAKE(-Wall -Werror foreign)
 
 PKG_CHECK_MODULES(GMC,
 [
-	glib-2.0
-	clutter-1.0
+	glib-2.0 >= $GLIB_REQUIRED
+	clutter-1.0 >= $CLUTTER_REQUIRED
 	sqlite3
 ])
 
