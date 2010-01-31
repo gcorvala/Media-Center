@@ -62,22 +62,18 @@ gmc_video_model_iter_get_value (ClutterModelIter *iter,
                                 GValue           *value)
 {
   ClutterModel *model;
-  guint row;
   GmcVideoModelPrivate *priv_model;
-  const gchar *name;
   gchar *query, *string_value, *tmp;
+  guint row, uint_value, sort_column;
   sqlite3_stmt *statement;
   gint error_code;
-  guint uint_value, sort_column;
   GType type;
 
   model = clutter_model_iter_get_model (iter);
   row = clutter_model_iter_get_row (iter);
   priv_model = GMC_VIDEO_MODEL_GET_PRIVATE (model);
 
-  name = clutter_model_get_column_name (model, column);
-
-  query = g_strdup_printf ("SELECT %s FROM %s", name, TABLE);
+  query = g_strdup_printf ("SELECT %s FROM %s", clutter_model_get_column_name (model, column), TABLE);
 
   sort_column = clutter_model_get_sorting_column (model);
   if (sort_column != -1) {
