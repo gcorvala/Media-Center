@@ -25,7 +25,7 @@ main (int argc, char **argv)
   clutter_init (&argc, &argv);
 
   script = clutter_script_new ();
-  id = clutter_script_load_from_file (script, "main.ui", &error);
+  id = clutter_script_load_from_file (script, PACKAGE_DATADIR "/main.ui", &error);
   if (!id) {
     g_critical ("clutter_script_load_from_file : %d - %s", error->code, error->message);
     g_object_unref (script);

@@ -27,7 +27,12 @@ PKG_CHECK_MODULES(GMC,
 ])
 
 AC_PROG_CC
-AC_CONFIG_FILES([Makefile
-  src/Makefile
-  ])
+AC_CONFIG_FILES(
+[
+	Makefile
+	data/Makefile
+	data/img/Makefile
+	data/icons/Makefile
+ 	src/Makefile
+])
 AC_OUTPUT

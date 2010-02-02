@@ -1,6 +1,8 @@
 bin_PROGRAMS = main
 
-AM_CPPFLAGS = $(GMC_CFLAGS)
+AM_CPPFLAGS = \
+	-DPACKAGE_DATADIR=\""$(datadir)/gmc"\" \
+	$(GMC_CFLAGS)
 
 LDADD = \
 	$(GMC_LIBS)
@@ -10,7 +12,7 @@ main_SOURCES = \
 	gmc-button.c \
 	gmc-video-model.c
 
-uidir = $(datadir)/gmc
+#uidir = $(datadir)/gmc
 
-ui_DATA = \
-	main.ui
+#ui_DATA = \
+#       ../data/main.ui

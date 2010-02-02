@@ -76,7 +76,7 @@ gmc_button_set_icon (GmcButton *self, const gchar *filename)
 
   icon = clutter_texture_new_from_file (filename, &error);
   if (!icon) {
-    g_critical ("%s - %s", G_STRFUNC, error->message);
+    g_critical ("%s - %s [%s] %s", G_STRFUNC, error->message, filename, clutter_text_get_text (CLUTTER_TEXT (priv->label)));
     return;
   }
 

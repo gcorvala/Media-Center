@@ -20,7 +20,7 @@
 {
   "id"              : "background",
   "type"            : "ClutterTexture",
-  "filename"        : "../data/bg.jpg"
+  "filename"        : "img/bg.jpg"
 }
 
 {
@@ -45,7 +45,6 @@
   "id"              : "movies-button",
   "type"            : "GmcButton",
   "reactive"        : true,
-  "icon"            : "../img/play.png",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
 
@@ -53,6 +52,7 @@
   "id"              : "music-button",
   "type"            : "GmcButton",
   "reactive"        : true,
+  "icon"            : "img/bg.jpg",
   "label"           : "Music",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
@@ -61,8 +61,8 @@
   "id"              : "photos-button",
   "type"            : "GmcButton",
   "reactive"        : true,
+  "icon"            : "icons/stop.png",
   "label"           : "Photos",
-  "icon"            : "../img/stop.png",
   "signals"         : [ { "name" : "clicked", "handler" : "clicked_cb" } ]
 }
 
