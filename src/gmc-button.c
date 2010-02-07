@@ -385,6 +385,7 @@ gmc_button_unmap (ClutterActor *self)
     clutter_actor_unmap (priv->label);
   }
 }
+
 static void
 gmc_button_class_init (GmcButtonClass *klass)
 {

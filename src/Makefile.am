@@ -10,9 +10,5 @@ LDADD = \
 main_SOURCES = \
 	main.c \
 	gmc-button.c \
+	gmc-cover-flow-layout.c \
 	gmc-video-model.c
-
-#uidir = $(datadir)/gmc
-
-#ui_DATA = \
-#       ../data/main.ui
