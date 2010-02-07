@@ -234,8 +234,10 @@ void
 gmc_video_model_set_filename (GmcVideoModel *self, const gchar *filename)
 {
   GmcVideoModelPrivate *priv;
-  //sqlite3_stmt *statement;
+  sqlite3_stmt *statement;
+  gchar *query;
   gint error_code;
+  gboolean create = FALSE;
 
   priv = GMC_VIDEO_MODEL_GET_PRIVATE (self);
 
@@ -261,8 +263,33 @@ gmc_video_model_set_filename (GmcVideoModel *self, const gchar *filename)
     return;
   }
 
-/*  gchar *query = "CREATE TABLE Movies ( Title CHAR(50) PRIMARY KEY, Year INTEGER(4) );";
+  query = g_strdup_printf ("SELECT COUNT (*) FROM sqlite_master WHERE name LIKE '%s'", TABLE);
   error_code = sqlite3_prepare_v2 (priv->sql, query, strlen (query), &statement, NULL);
+  g_free (query);
+  if (error_code != SQLITE_OK) {
+    g_critical ("%s prepare : %d - %s", G_STRFUNC, error_code, sqlite3_errmsg (priv->sql));
+    return;
+  }
+
+  error_code = sqlite3_step (statement);
+  if (error_code != SQLITE_ROW) {
+    g_critical ("%s step : %d - %s", G_STRFUNC, error_code, sqlite3_errmsg (priv->sql));
+    return;
+  }
+
+  if (sqlite3_column_int (statement, 0) == 0) {
+    create = TRUE;
+  }
+
+  sqlite3_finalize (statement);
+
+  if (create == FALSE) {
+    return;
+  }
+
+  query = g_strdup_printf ("CREATE TABLE %s (Title CHAR, Year INTEGER)", TABLE);
+  error_code = sqlite3_prepare_v2 (priv->sql, query, strlen (query), &statement, NULL);
+  g_free (query);
   if (error_code != SQLITE_OK) {
     g_critical ("%s prepare : %d - %s", G_STRFUNC, error_code, sqlite3_errmsg (priv->sql));
     return;
@@ -274,7 +301,7 @@ gmc_video_model_set_filename (GmcVideoModel *self, const gchar *filename)
     return;
   }
 
-  sqlite3_finalize (statement);*/
+  sqlite3_finalize (statement);
 }
 
 static void

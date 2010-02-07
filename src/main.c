@@ -11,10 +11,9 @@ clicked_cb (GmcButton *button)
 int
 main (int argc, char **argv)
 {
-  ClutterActor *stage, *background, *box, *rectangle;
-  ClutterColor *color;
+  ClutterActor *stage;
   ClutterScript *script;
-  ClutterLayoutManager *cover_flow;
+  ClutterModel *model;
   GError *error = NULL;
   guint id;
 
@@ -34,10 +33,9 @@ main (int argc, char **argv)
 
   stage = CLUTTER_ACTOR (clutter_script_get_object (script, "stage"));
 
-  background = CLUTTER_ACTOR (clutter_script_get_object (script, "background"));
-  clutter_actor_set_size (background, CLUTTER_STAGE_WIDTH (), CLUTTER_STAGE_HEIGHT ());
-
   clutter_actor_show_all (stage);
+
+  model = gmc_video_model_new ("movies.db");
   
   clutter_main ();
 
