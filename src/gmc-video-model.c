@@ -24,7 +24,7 @@ struct _GmcVideoModelPrivate
 
 struct _GmcVideoModelIter
 {
-  ClutterModelIter              parent;
+  ClutterModelIter parent;
 };
 
 struct _GmcVideoModelIterClass 
