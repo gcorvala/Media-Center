@@ -10,5 +10,4 @@ LDADD = \
 main_SOURCES = \
 	main.c \
 	gmc-button.c \
-	gmc-cover-flow-layout.c \
 	gmc-video-model.c
